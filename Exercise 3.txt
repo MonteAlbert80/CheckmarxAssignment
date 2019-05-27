@@ -1,0 +1,19 @@
+Dear Joe,
+
+Looking at the code, I can see why your AppSec team believes that it is vulnerable to SQL injection.
+They do see that QueryString is directly being plugged into SQL statement without validation, which could cause database corruption, since potential hackers can comment out the WHERE clause with their SQL injection.
+However looking at the code, the SQL statement would not execute at all, since @descript part does not have begining and end quotes part of the string. And it will raise an error, since it expects string values in SQL statements to be enclosed in quotes.
+
+To make sure that your code vulnerability gets detected by Checkmarx, please change your SQL statement to 
+SELECT @sql = ' UPDATE dbo.products SET Description = ''' + @descript + ''' WHERE ProdID = ' + CAST(@product AS NVARCHAR(10))
+
+However this will not solve the actual problem. To make the SQL injection attempt not matter to your code, try instead of running SQL statement as a string in stored procedure, run it directly like this:
+
+BEGIN
+UPDATE dbo.products SET Description = @descript
+WHERE ProdID = @product
+END
+
+I hope this helps
+
+Regards,
